@@ -16,7 +16,7 @@ def denominator(dictionary):
 
 
 def P(word):
-    return bWORDS[word] / denominator(WORDS)
+    return WORDS[word] / denominator(WORDS)
 
 
 print(P('the'))

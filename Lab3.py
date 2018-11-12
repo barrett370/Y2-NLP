@@ -1,56 +1,114 @@
-import nltk
-
-grammar1 = nltk.CFG.fromstring("""
- S -> NP VP
- VP -> V NP | V NP PP
- PP -> P NP
- PN -> "she" | "She" |"He" |"They" |"this"
- V -> "saw" | "ate" | "walked" | "eat" |"enjoyed" | "going" | "watches" | "went" |"like" | "watch" |"likes"  |"used" 
- NP -> "John" | "Mary" | "Bob" | Det N | Det N PP | PN  |Det Det N | "Smith" |"John."|  "Jane" |"Lee" |"Kim" |"Kim." |"December." |"Mary."
- Det -> "a" | "an" | "the" | "my" | "who" | "Did"  | "The" | "to" |"didn't" 
- N -> "man" | "dog" | "cat" | "telescope" | "park" | "fish" | "fork" | "movies." |"western" |"cinema" |"horror" |"child" |"child." |"telescope." |"telescopes" |"home" 
- P -> "in" | "on" | "by" | "with"  |"sometimes" |"Every" 
- """)
-
-sent = "The cat ate the fish".split()
-
-rd_parser = nltk.RecursiveDescentParser(grammar1)
-
-# for tree in rd_parser.parse(sent):
-#     print(tree)
-#
-
-#
-# tokens = 'Michael likes children'.split()
-from nltk import load_parser
-
-#
-cp = load_parser('predef_grammar.fcfg', trace=2)
-#
-# for tree in cp.parse(tokens):
-#     tree.draw()
+# from nltk.corpus import WordListCorpusReader
 #
 #
 
-sr_parser = nltk.ShiftReduceParser(grammar1, trace=2)
 #
-# sent = 'Mary saw a dog'.split()
+# def into():
+#     import nltk
 #
-# for tree in sr_parser.parse(sent):
-#     tree.draw()
+#     from nltk.corpus import brown, treebank
+#
+#     brown.words()
+#
+#     treebank.words()
+#
+#     print(len(treebank.tagged_sents()))
+#
+#     ##2. as the total number of tagged sentences in the treebank corpus is 3914 this is therefore a 77:23 split
+#
+#     train_sents = treebank.tagged_sents()[:3000]
+#
+#     test_sents = treebank.tagged_sents()[3000:]
+#
+#     from nltk.tag import DefaultTagger
+#
+#     tagger = DefaultTagger('NN')
+#
+#     print(tagger.tag_sents([['Hello', '.'], ['My', 'name', 'is', 'Steve']]))
+#
+#     print(tagger.evaluate(test_sents))
+#
+#     from nltk.tag import UnigramTagger
+#
+#     print("uni")
+#     unigram_tagger = UnigramTagger(train_sents)
+#
+#     print(unigram_tagger.evaluate(test_sents))
+#     print(unigram_tagger.evaluate(train_sents))
+#
+#     unigram_tagger2 = UnigramTagger(train_sents, cutoff=3)
+#
+#     print(unigram_tagger2.evaluate(test_sents))
+#
+#     from nltk.tag import BigramTagger
+#
+#     print("bi")
+#     bigram_tagger = BigramTagger(train_sents)
+#
+#     print(bigram_tagger.evaluate(test_sents))
+#     print(bigram_tagger.evaluate(train_sents))
+#
+#     bigram_tagger2 = BigramTagger(train_sents, cutoff=3)
+#     print(bigram_tagger2.evaluate(test_sents))
+#
+#     from nltk.tag import TrigramTagger
+#
+#     print("tri")
+#     trigram_tagger = TrigramTagger(train_sents)
+#
+#     print(trigram_tagger.evaluate(test_sents))
+#     print(trigram_tagger.evaluate(train_sents))
+#
+#     trigram_tagger2 = TrigramTagger(train_sents, cutoff=3)
+#     print(trigram_tagger2.evaluate(test_sents))
+#
+#     print("brill")
+#
+#     import brill_tagger_wrapper
+#
+#     brill_tagger = brill_tagger_wrapper.train_brill_tagger(trigram_tagger, train_sents)
+#     print(brill_tagger.evaluate(test_sents))
+#
+#     print("backoff")
+#     bt = backoff_tagger(train_sents, [UnigramTagger, BigramTagger, TrigramTagger], DefaultTagger('NN'))
+#
+#     print(bt.evaluate(test_sents))
+#
 
-c_parser = nltk.ChartParser(grammar1, trace=2)
+def generatefileids():
+    fileids = []
+    for i in range(301, 486):
+        fileids.append(str(i) + ".txt")
+    return fileids
 
-sents = open('sents', 'r')
-import POS_taggers
 
-tagger = POS_taggers.tagger
-tagger.__init__(tagger)
-for sentence in sents.read().split("\n"):
-    for tree in sr_parser.parse(sentence.split()):
-        # print(tree)
-        pass
-    for tree in c_parser.parse(sentence.split()):
-        print(tree)
+class tagger():
+    def __init__(self):
+        from nltk import UnigramTagger
+        from nltk import BigramTagger
+        from nltk import TrigramTagger
+        from nltk import DefaultTagger
+        from nltk.corpus import brown, treebank
+        # print(len(brown.tagged_sents()))
+        train_sents = brown.tagged_sents()[:50000]
+        # self.test_sents = brown.tagged_sents()[50000:]
 
-    print(tagger.tag(tagger, sentence.split()))
+        self.bt = self.backoff_tagger(train_sents, [UnigramTagger, BigramTagger, TrigramTagger], DefaultTagger('NN'))
+
+    def backoff_tagger(self, train_sentences, tagger_classes, backoff=None):
+        for cls in tagger_classes:
+            backoff = cls(train_sentences, backoff=backoff)
+        return backoff
+
+    def tag(self, words):
+        # print(self.bt.evaluate(self.test_sents))
+        #
+        # import seminar_data_parser
+        # words = seminar_data_parser.parse_data()
+        return self.bt.tag(words)
+
+
+
+
+# main()
+# into()

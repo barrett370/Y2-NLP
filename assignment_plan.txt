@@ -1,0 +1,7 @@
+﻿Assignment plan
+
+
+I have completed all but the most recent lab and from these can see many of the areas where the knowledge will be applied within the assessed assignment. 
+I have used brill taggers to tag the untagged seminar data. 
+I intend to use the relational extract facilities within nltk to aid with the assignemnt as the lab example seemed to show a lot of promise for extraction of data such as location from the untagged seminar data set.  
+I am yet to directly work on the seminar extraction, however since completing week 5 Lab and having looked over the lab from week 6 I feel I now have sufficient knowledge to begin to make progress on the summative assignment. 
