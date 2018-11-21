@@ -36,10 +36,11 @@ def get_untagged():
 def get_tagged():
     reader = WordListCorpusReader('data/seminars_training/training', generate_file_ids_tagged())
     words = []
-    # print(reader.words())
+    # print(reader.words())    reader = WordListCorpusReader('data/seminars_untagged/untagged', generate_file_ids_untagged())
+
     # def append_each(words_to_append, l):
     #     for word in words_to_append:
-    #         l.append(word)
+    #         l.append(word)w
     #     return l
     #
     # for each in reader.words():

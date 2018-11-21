@@ -6,11 +6,13 @@ import Lab3
 import seminar_data_parser
 
 t = Lab3.tagger()
-t.__init__()
+# /t.__init__()
 
 words = seminar_data_parser.get_untagged()
 
-print(t.tag(words))
+tagged = t.tag(words)
+for each in tagged:
+    print(each)
 
 # q = Queue()
 # l = len(words)

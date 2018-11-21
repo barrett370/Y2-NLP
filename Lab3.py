@@ -74,6 +74,8 @@
 #
 #     print(bt.evaluate(test_sents))
 #
+import seminar_data_parser
+
 
 def generatefileids():
     fileids = []
@@ -90,8 +92,10 @@ class tagger():
         from nltk import DefaultTagger
         from nltk.corpus import brown, treebank
         # print(len(brown.tagged_sents()))
-        train_sents = brown.tagged_sents()[:50000]
+        # train_sents = brown.tagged_sents()[:50000]
         # self.test_sents = brown.tagged_sents()[50000:]
+        train_sents = seminar_data_parser.get_tagged()
+        print(train_sents)
 
         self.bt = self.backoff_tagger(train_sents, [UnigramTagger, BigramTagger, TrigramTagger], DefaultTagger('NN'))
 

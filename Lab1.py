@@ -20,7 +20,7 @@ def P(word):
 
 
 print(P('the'))
-
+print(P('and'))
 print(P('computer'))
 
 
