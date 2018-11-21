@@ -1,7 +1,3 @@
-import re
-
-import final_assignment.seminar_data_extractor as extractor
-import final_assignment.tokenize_and_tag as tagger
 #
 # print(extractor.get_tagged())
 # print(extractor.get_untagged())
@@ -31,20 +27,11 @@ import final_assignment.tokenize_and_tag as tagger
 #
 #     # print(words)
 #     print(tokenizer.tag(words))
-import final_assignment.regex_tagger as rtagger
+import final_assignment.seminar_data_extractor as extractor
 
 emails = extractor.get_untagged()
-print(len(emails))
-for header in emails:
-    dates_found = rtagger.find_dates(extractor.flatten(header.get_header().get_untagged_header()))
-    try:
-        header.get_header().set_date(dates_found[0])
-    except:
-        header.get_header().set_date(None)
-    print(dates_found)
+for email in emails:
+    email.get_header().analyse_times()
+    email.get_header().analyse_dates()
+    print(email.get_header())
 
-    header.get_header().analyse_times()
-
-    # times_found = rtagger.find_times(extractor.flatten(header.get_header().get_untagged_header()))
-    # header.times = times_found
-    # header.dates = dates_found
