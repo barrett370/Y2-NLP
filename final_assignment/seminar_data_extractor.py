@@ -1,6 +1,6 @@
 from nltk.corpus import WordListCorpusReader
 
-from final_assignment import email_struct, header_struct
+from final_assignment import email_struct, header_struct, abstract_struct
 
 
 def generate_file_ids(s, e):
@@ -18,22 +18,11 @@ def get_untagged():
         emails = reader.words(id)
         split_index = emails.index("Abstract: ")
         header = header_struct.Header(emails[:split_index])
-        abstract = emails[split_index:]
+        abstract = abstract_struct.Abstract(emails[split_index:])
         email = email_struct.Email(header, abstract)
         ret.append(email)
 
     return ret
-
-
-def flatten(l):
-    ret = ""
-    for each in l:
-        if type(l) == list:
-            ret += " " + flatten(each)
-        else:
-            ret += each
-    return ret
-
 
 def get_untagged_abstract():
     emails = get_untagged()

@@ -1,5 +1,7 @@
-import final_assignment.seminar_data_extractor as extractor
 
+# import final_assignment.seminar_data_extractor as extractor
+import final_assignment.misc_functions
+import final_assignment.seminar_data_extractor
 import re
 
 
@@ -28,10 +30,10 @@ def extract_entities():
     """
     locations = []
     speakers = []
-    tagged_data = extractor.get_tagged_EE()
+    tagged_data = final_assignment.seminar_data_extractor.get_tagged_EE()
     location_re = r'<location>(.*?)</location>'
     speaker_re = r'<speaker>(.*?)</speaker>'
-    flat_data = extractor.flatten(tagged_data)
+    flat_data = final_assignment.misc_functions.flatten_to_string(tagged_data)
     locations.append(re.findall(location_re, flat_data))
     speakers.append(re.findall(speaker_re, flat_data))
     locations_set = setify(locations[0])

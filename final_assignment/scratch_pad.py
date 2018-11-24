@@ -31,7 +31,8 @@ import final_assignment.seminar_data_extractor as extractor
 
 emails = extractor.get_untagged()
 for email in emails:
-    email.get_header().analyse_times()
-    email.get_header().analyse_dates()
-    print(email.get_header())
 
+    email.get_header().analyse()
+    print(email.get_header())
+    # print(str(email.get_abstract().get_untagged_abstract()))
+    # print(email.get_header().find_possible_speakers())
