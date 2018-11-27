@@ -8,6 +8,8 @@ import re
 #     r'([0-9]|[0-1][0-9]|[2][0-3])(:|\s)([0-5][0-9])(\s{0,1})(AM|PM|am|pm|aM|Am|pM|Pm{2,2})|(([0][0-9]|[1][0-9]|[2][0-3])(\s{0,1})(AM|PM|am|pm|aM|Am|pM|Pm{2,2}))$',
 #     r'([0-1][0-9]|[2][0-3]):([0-5][0-9])',
 #     r'([0-9]|[0-1][0-9]|[2][0-3])(:|\s)([0-5][0-9])$']
+from final_assignment.misc_functions import flatten_list
+
 time_reg = r'([0-9]|[0-1][0-9]|[2][0-3])(:|\s)([0-5][0-9])(\s{0,1})(AM|PM|am|pm|aM|Am|pM|Pm{2,2})|([0][0-9]|[1][0-9]|[2][0-3])(\s{0,1})(AM|PM|am|pm|aM|Am|pM|Pm{2,2})$|([0-1][0-9]|[2][0-3]):([0-5][0-9])|([0-9]|[0-1][0-9]|[2][0-3])(:|\s)([0-5][0-9])|([0-12]\s{0,1}(AM|PM|am|pm|aM|Am|pM|Pm|p[.]m[.]{2}))|[0-9]\s(p.m.|a.m.)'
 
 # dates_reg [ matches 01/01/2001 | 1/1/2001 | 01/1/01,
@@ -26,28 +28,16 @@ def find_dates(text):
     return dates
 
 
-def flatten_list(l):
-    """
-    function to take regex results of multiple regex and combine them into a single array
-    :param l: list to be flattened
-    """
-    ret = []
-    for each in l:
-        if type(each) == list:
-            ret.append(flatten_list(each))
-        else:
-            ret.append(each)
-    return ret
-
-
 def find_times(text):
     # find_times_with_tag(text)
     times = []
     extract = re.findall(time_reg, text)
     if extract:
         times.append(extract)
-
-    return flatten_list(times[0])
+    try:
+        return flatten_list(times[0])
+    except:
+        return []
 
 
 def find_times_with_tag(text):
@@ -82,15 +72,6 @@ def find_speakers(text, speakers):
         return names_occurring_sorted[0]
     else:
         return None
-
-
-# def remove_spaces(string):
-#     string_list = list(string)
-#     ret_string = ""
-#     for char in string_list:
-#         if char != '\t':
-#             ret_string += char
-#     return ret_string
 
 
 def find_speakers_with_tag(text, speakers):

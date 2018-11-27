@@ -1,3 +1,5 @@
+import final_assignment.regex_tagger as rtagger
+from final_assignment.misc_functions import twelve_to_twenty_four
 class Abstract:
 
     def __init__(self, abstract):
@@ -26,7 +28,17 @@ class Abstract:
         pass
 
     def analyse_time(self):
-        pass
+        times_found = []
+        for line in self.get_untagged_abstract():
+            times_found.append(rtagger.find_times(line))
+        print(times_found)
+        parsed_times = []
+        for each in times_found:
+            if each != None:
+                print(self.get_untagged_abstract())
+                parsed_times.append(twelve_to_twenty_four(each[0]))
+
+
 
     def analyse_date(self):
         pass

@@ -33,7 +33,7 @@ def extract_entities():
     tagged_data = final_assignment.seminar_data_extractor.get_tagged_EE()
     location_re = r'<location>(.*?)</location>'
     speaker_re = r'<speaker>(.*?)</speaker>'
-    flat_data = final_assignment.misc_functions.flatten_to_string(tagged_data)
+    flat_data = final_assignment.misc_functions.concat(tagged_data)
     locations.append(re.findall(location_re, flat_data))
     speakers.append(re.findall(speaker_re, flat_data))
     locations_set = setify(locations[0])
