@@ -17,6 +17,30 @@ time_reg = r'([0-9]|[0-1][0-9]|[2][0-3])(:|\s)([0-5][0-9])(\s{0,1})(AM|PM|am|pm|
 dates_reg = [r'(([1-9])|(0[1-9])|(1[0-2]))\/((0[1-9])|([1-31]))\/((\d{2})|(\d{4}))',
              r'([0-3][0-9]|[0-9])-((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Sept|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))-([0-9][0-9])']
 
+sentence_reg = r'[A-Z][^\.!?]*[\.!?]'
+
+
+def find_sentences(paras):
+    ret = []
+    for para in paras:
+        ret.append(re.split(sentence_reg, para))
+    return ret
+
+
+def find_paras(text):
+    poss_paras = re.split(r'\n\n', text)
+    primary_filters = [' ', '-- ', '']
+    f_poss_paras = []
+    for para in poss_paras:
+        if not primary_filters.__contains__(para):
+            f_poss_paras.append(para)
+    filters = ["WHEN:", "WHERE:", "SPEAKER", "TITLE:", "WHO:", "HOST"]
+    filtered_paras = f_poss_paras
+    for f in filters:
+        filtered_paras = (list(filter(lambda x: f not in x, filtered_paras)))
+
+    return filtered_paras
+
 
 def find_dates(text):
     dates = []

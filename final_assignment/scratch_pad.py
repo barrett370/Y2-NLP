@@ -35,4 +35,10 @@ for email in emails:
     # print(email.get_header())
     # print(str(email.get_abstract().get_untagged_abstract()))
     # print(email.get_header().find_possible_speakers())
-    email.get_abstract().analyse(email.get_header())
+    # print(email.get_abstract())
+    import final_assignment.regex_tagger as rt
+    import final_assignment.misc_functions as m
+
+    # print(rt.find_sentences(rt.find_paras(m.concat(email.get_abstract().get_untagged_abstract()))))
+    email.tag_all()
+    # email.get_abstract().analyse(email.get_header())

@@ -1,3 +1,4 @@
+import nltk
 from nltk.corpus import WordListCorpusReader
 
 from final_assignment import email_struct, header_struct, abstract_struct
@@ -14,15 +15,24 @@ def get_untagged():
     ids = generate_file_ids(301, 485)
     reader = WordListCorpusReader('../data/seminars_untagged/untagged', ids)
     ret = []
+
     for id in ids:
+        path = f"../data/seminars_untagged/untagged/{id}"
+
+
         emails = reader.words(id)
+        data = nltk.data.load(path, format='text')
+
         split_index = emails.index("Abstract: ")
         header = header_struct.Header(emails[:split_index])
-        abstract = abstract_struct.Abstract(emails[split_index:])
-        email = email_struct.Email(header, abstract)
-        ret.append(email)
+        abstract = None
+        import final_assignment.misc_functions as m
+        abstract = abstract_struct.Abstract(m.concat(data.split("Abstract:")[1]))
+        emails = email_struct.Email(header, abstract)
+        ret.append(emails)
 
     return ret
+
 
 def get_untagged_abstract():
     emails = get_untagged()

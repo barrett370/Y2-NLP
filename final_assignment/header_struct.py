@@ -92,7 +92,11 @@ class Header:
     def analyse_speakers(self):
         speakers, _ = tee.extract_entities()
         speaker = rtagger.find_speakers_with_tag(self.get_untagged_header(), speakers)
-        self.speaker = speaker
+        import re
+        speaker_r = None
+        if speaker is not None:
+            speaker_r = re.sub(r'[^\w\s]', '', speaker)
+        self.speaker = speaker_r
 
     def analyse_locations(self):
         _, locations = tee.extract_entities()
