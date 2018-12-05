@@ -4,17 +4,19 @@ import final_assignment.regex_tagger as rtagger
 
 
 def generate_date_perms(norm_date):
-    poss_dates = [datetime.datetime.strptime(norm_date, '%d-%m-%y').strftime('%B %d,%Y')]
+    poss_dates = [datetime.datetime.strptime(norm_date, '%d-%m-%y').strftime('%B %d,%Y'),
+                  datetime.datetime.strptime(norm_date, '%d-%m-%y').strftime('%b %d')]
     t = datetime.datetime.strptime(norm_date, '%d-%m-%y').strftime('%d-%b-%y')
     poss_dates.append(t)
     if t[0] == "0":
         poss_dates.append(t[1:])
+
     poss_dates.append(norm_date)
     return poss_dates
 
 
 def generate_time_perms(norm_time):
-    ##todo 3:30 p.m. until 4:30 p.m.
+
     poss_times = [norm_time]
     t = datetime.datetime.strptime(norm_time, '%H:%M').strftime('%I:%M %p')
     poss_times.append(re.sub("PM", "pm", t))
