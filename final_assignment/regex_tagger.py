@@ -20,11 +20,21 @@ dates_reg = [r'(([1-9])|(0[1-9])|(1[0-2]))\/((0[1-9])|([1-31]))\/((\d{2})|(\d{4}
 sentence_reg = r'[A-Z][^\.!?]*[\.!?]'
 
 
-def find_sentences(paras):
-    ret = []
-    for para in paras:
-        ret.append(re.split(sentence_reg, para))
-    return ret
+def find_sentences(para):
+    ret = re.findall(sentence_reg, para)
+    filters = ["", " ", "\t", "\n"]
+    filtered_ret = []
+    for each in ret:
+        if each not in filters:
+            filtered_ret.append(each)
+    ret = filtered_ret
+    tagged_ret = []
+    for each in ret:
+        tagged_ret.append(f"<sentence>{each}</sentence>")
+    ret = tagged_ret
+    import final_assignment.misc_functions as m
+
+    return m.concat(ret)
 
 
 def find_paras(text):

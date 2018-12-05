@@ -14,7 +14,7 @@ class Abstract:
         return self.untagged_abstract
 
     def __str__(self) -> str:
-        tagged_abstract = '\n'.join(map(str, self.tagged_abstract))
+        tagged_abstract = '\n'.join(map(str, self.tagged_abstract))+"\n"
 
         return f"Tagged: \n {tagged_abstract} \n "
 
