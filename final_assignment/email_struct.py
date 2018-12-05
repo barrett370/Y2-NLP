@@ -2,6 +2,7 @@ import datetime
 import re
 import final_assignment.regex_tagger as rtagger
 
+
 def generate_date_perms(norm_date):
     poss_dates = [datetime.datetime.strptime(norm_date, '%d-%m-%y').strftime('%B %d,%Y')]
     t = datetime.datetime.strptime(norm_date, '%d-%m-%y').strftime('%d-%b-%y')
@@ -80,19 +81,22 @@ class Email:
                 lines_filtered.append(line)
         lines = lines_filtered
         para_lines = []
-        tags = ["WHO:", "WHERE:", "WHEN:", "HOST", "TITLE:"]
+        tags = ["WHO:", "WHERE:", "WHEN:", "HOST", "TITLE:", "APPOINTMENT:", "Host:", "Appointment:", "Who:", "Where:",
+                "When:", "Title:"]
 
         for line in lines:
             if not any(ext in line for ext in tags):
-                para_lines.append(f"<paragraph>{rtagger.find_sentences(line)}</paragraph>")
+                sents = rtagger.find_sentences(line)
+                if sents != "":
+                    para_lines.append(f"<paragraph>{sents}</paragraph>")
+                else:
+                    para_lines.append(f"<paragraph>{line}</paragraph>")
             else:
                 para_lines.append(line)
         lines = para_lines
         tagged_abstract = self.tag_text(lines)
 
         self.abstract.tagged_abstract = tagged_abstract
-
-
 
     def tag_text(self, lines):
         tagged_text = []
