@@ -1,7 +1,54 @@
+import datetime
+import re
+
+
+def generate_date_perms(norm_date):
+    poss_dates = [datetime.datetime.strptime(norm_date, '%d-%m-%y').strftime('%B %d,%Y')]
+    t = datetime.datetime.strptime(norm_date, '%d-%m-%y').strftime('%d-%b-%y')
+    poss_dates.append(t)
+    if t[0] == "0":
+        poss_dates.append(t[1:])
+    poss_dates.append(norm_date)
+    return poss_dates
+
+
+def generate_time_perms(norm_time):
+    ##todo 3:30 p.m. until 4:30 p.m.
+    poss_times = [norm_time]
+    t = datetime.datetime.strptime(norm_time, '%H:%M').strftime('%I:%M %p')
+    poss_times.append(re.sub("PM", "pm", t))
+    poss_times.append(re.sub("PM", "p.m.", t))
+    poss_times.append(re.sub("PM", "p.m", t))
+    poss_times.append(re.sub("AM", "am", t))
+    poss_times.append(re.sub("AM", "a.m.", t))
+    poss_times.append(re.sub("AM", "a.m", t))
+    poss_times.append(t)
+
+    if t[0] == "0":
+        poss_times.append(t[1:])
+    t = datetime.datetime.strptime(norm_time, '%H:%M').strftime('%I:%M%p')
+    poss_times.append(t)
+    poss_times.append(re.sub("PM", "pm", t))
+    poss_times.append(re.sub("PM", "p.m.", t))
+    poss_times.append(re.sub("PM", "p.m", t))
+    poss_times.append(re.sub("AM", "am", t))
+    poss_times.append(re.sub("AM", "a.m.", t))
+    poss_times.append(re.sub("AM", "a.m", t))
+
+    if t[0] == "0":
+        poss_times.append(t[1:])
+    t = datetime.datetime.strptime(norm_time, '%H:%M').strftime('%I:%M')
+    poss_times.append(t)
+    if t[0] == "0":
+        poss_times.append(t[1:])
+    return poss_times
+
+
 class Email:
-    def __init__(self, header, abstract):
+    def __init__(self, header, abstract, fileid):
         self.header = header
         self.abstract = abstract
+        self.fileid = fileid
 
     def get_header(self):
         return self.header
@@ -10,22 +57,75 @@ class Email:
         return self.abstract
 
     def tag_all(self):
+        self.header.analyse()
         self.tag_header()
+        self.tag_abstract()
 
     def tag_header(self):
-        self.header.analyse()
-        print(self.header)
-        import re
-        tagged_header = self.header.untagged_header
-        for line in tagged_header():
-        # todo implement tagger
+        lines = self.header.get_untagged_header()
+        tagged_header = self.tag_text(lines)
+        self.header.set_tagged_header(tagged_header)
+
+    def tag_abstract(self):
+
+        # paras = rtagger.find_paras(self.abstract.get_untagged_abstract())
+        # sents = rtagger.find_sentences(paras)
+
+        lines = self.abstract.get_untagged_abstract().split("\n\n")
+
+        lines_filtered = []
+        filters = ['', ' ', '-- ']
+        for line in lines:
+            if line not in filters:
+                lines_filtered.append(line)
+        lines = lines_filtered
+        para_lines = []
+        for line in lines:
+            para_lines.append(f"<para>{line}</para>")
+        lines = para_lines
+        tagged_abstract = self.tag_text(lines)
+
+        self.abstract.tagged_abstract = tagged_abstract
+
+    def tag_text(self, lines):
+        tagged_text = []
+        for line in lines:
             try:
-                re.sub("(" + self.header.speaker + ")", f"<speaker>{self.header.get_speaker()}</speaker", line)
-                re.sub(r'(' + str(self.header.start_time) + ")", f"<stime>{self.header.start_time}</stime>", line)
-                re.sub(r'(' + str(self.header.end_time) + ")", f"<etime>{self.header.end_time}</etime>", line)
-                re.sub(r'(' + str(self.header.date) + ")", f"<date>{self.header.date}</date>", line)
-                re.sub(r'(' + str(self.header.location) + ")", f"<location>{self.header.location}</location>", line)
+                line = re.sub("(" + self.header.speaker + ")", f"<speaker>{self.header.get_speaker()}</speaker", line)
             except:
                 pass
+            try:
+                for time in generate_time_perms(self.header.start_time):
+                    oline = line
+                    line = re.sub(r'(' + str(time) + ")", f"<stime>{time}</stime>",
+                                  line)
+                    if oline != line:
+                        break
+            except:
+                pass
+            try:
+                for time in generate_time_perms(self.header.end_time):
+                    oline = line
+                    line = re.sub(r'(' + str(time) + ")", f"<etime>{time}</etime>", line)
+                    if oline != line:
+                        break
+            except:
+                pass
+            try:
+                for date in generate_date_perms(self.header.date):
+                    oline = line
+                    line = re.sub(r'(' + str(date) + ")", f"<date>{str(date)}</date>", line)
+                    if oline != line:
+                        break
+            except:
+                pass
+            try:
+                line = re.sub(r'(' + str(self.header.location) + ")", f"<location>{self.header.location}</location>",
+                              line)
+            except:
+                pass
+            tagged_text.append(line)
+        return tagged_text
 
-        print(self.header.get_untagged_header())
+    def __str__(self) -> str:
+        return f">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n ID: {self.fileid} \n Header: \n  {self.header} \n Abstract: \n {self.abstract}"

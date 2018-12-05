@@ -12,13 +12,21 @@ class Header:
         self.location = None
         self.date = None
         self.untagged_header = untagged_header
+        self.tagged_header = None
         self.times = []
         self.dates = []
 
     def __str__(self) -> str:
+
+        tagged_header = '\n'.join(map(str, self.tagged_header))
+
         return f"""Header Structure, Info: \n Speaker: {str(self.speaker)} \n Start time: {str(
             self.start_time)} \n End time: {str(self.end_time)
-        }\n Location: {str(self.location)} \n Date: {str(self.date)}   \n """
+        }\n Location: {str(self.location)} \n Date: {str(self.date)}   \n Untagged Header: {self.untagged_header} \n 
+        Tagged Header: \n {tagged_header}"""
+
+    def set_tagged_header(self, text):
+        self.tagged_header = text
 
     def analyse(self):
         self.analyse_times()
@@ -56,9 +64,9 @@ class Header:
         formal_times = []
         for time in times_found:
             formal_times.append(twelve_to_twenty_four(time))
-        if len(formal_times) == 1:  ##only start time present
-            self.set_start_time(formal_times[0])
-        else:  ##decide which is start / which is end
+        if len(formal_times) == 1:  # only start time present
+            self.set_start_time(str(formal_times[0][0]) + ":" + str(formal_times[0][1]))
+        else:  # decide which is start / which is end
             current_lowest = (25, 61)
             for time in formal_times:
                 if int(time[0]) < int(current_lowest[0]):
@@ -66,7 +74,7 @@ class Header:
                 elif int(time[0]) == int(current_lowest[0]):
                     if int(time[1]) < int(current_lowest[1]):
                         current_lowest = time
-            self.start_time = current_lowest
+            self.start_time = str(current_lowest[0]) + ":" + str(current_lowest[1])
 
             current_highest = (00, 00)
             for time in formal_times:
@@ -75,7 +83,7 @@ class Header:
                 elif int(time[0]) == int(current_highest[0]):
                     if int(time[1]) > int(current_highest[1]):
                         current_highest = time
-            self.end_time = current_highest
+            self.end_time = str(current_highest[0]) + ":" + str(current_highest[1])
 
     def analyse_dates(self):
         dates_found = rtagger.find_dates_with_tag(self.get_untagged_header())

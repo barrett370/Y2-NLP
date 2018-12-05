@@ -62,5 +62,8 @@ def formal_date_format(dates_list):
             except:
                 ret += element + '-'
         ret = ret[:-1]
+        format_check = ret.split("-")
+        if len(format_check[0]) == 1:
+            ret = "0"+ret
         dates_ret.append(ret)
     return dates_ret

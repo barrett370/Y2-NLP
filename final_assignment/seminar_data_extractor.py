@@ -28,7 +28,7 @@ def get_untagged():
         abstract = None
         import final_assignment.misc_functions as m
         abstract = abstract_struct.Abstract(m.concat(data.split("Abstract:")[1]))
-        emails = email_struct.Email(header, abstract)
+        emails = email_struct.Email(header, abstract,id)
         ret.append(emails)
 
     return ret

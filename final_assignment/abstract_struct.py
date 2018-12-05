@@ -14,7 +14,9 @@ class Abstract:
         return self.untagged_abstract
 
     def __str__(self) -> str:
-        return f"Tagged: \n {self.tagged_abstract} \n Untagged: \n {self.get_untagged_abstract()}"
+        tagged_abstract = '\n'.join(map(str, self.tagged_abstract))
+
+        return f"Tagged: \n {tagged_abstract} \n "
 
     def analyse(self, header):  # only bothers finding data for tags that haven't been found in the header
         if header.get_date() is None:

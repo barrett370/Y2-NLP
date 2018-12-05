@@ -41,4 +41,5 @@ for email in emails:
 
     # print(rt.find_sentences(rt.find_paras(m.concat(email.get_abstract().get_untagged_abstract()))))
     email.tag_all()
+    print(email)
     # email.get_abstract().analyse(email.get_header())
