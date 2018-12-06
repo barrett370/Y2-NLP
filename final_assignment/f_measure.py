@@ -94,10 +94,22 @@ def f_measure():
         # print(tp,fp,fn)
         fs.append((f, _id))
         print(f, _id)
-    import statistics
-    print(f"""Average f_measure = {sum([pair[0] for pair in fs]) / (485 - 301)} Maximum = {max(
-        pair[0] for pair in fs)} Minimum = {min(pair[0] for pair in fs)} Modal value = {statistics.mode(
-        pair[0] for pair in fs)}""")
+    import statistics as s
+    average = sum([pair[0] for pair in fs]) / (485 - 301)
+    mode = s.mode(pair[0] for pair in fs)
+    maximum = max(
+        pair[0] for pair in fs)
+    minimum = min(pair[0] for pair in fs)
+    print(f"""Average f_measure = {average} Maximum = {maximum} Minimum = {minimum} Modal value = {mode}""")
+    import matplotlib.pyplot as plt
+    ys, xs = zip(*fs)
+    plt.scatter(x=xs, y=ys, marker="x")
+
+    # plt.axhline(y=average,xmin="300.txt",xmax="348.txt")
+    plt.hlines(y=average, xmin="300.txt", xmax="485.txt", linestyles='dotted', label="average")
+    plt.plot("400.txt", average, color="red", label="Average")
+    plt.plot("490.txt", maximum, color="red", label="max")
+    plt.show()
 
 
 f_measure()
