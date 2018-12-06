@@ -13,11 +13,11 @@ def generate_file_ids(s, e):
 
 def get_untagged():
     ids = generate_file_ids(301, 485)
-    reader = WordListCorpusReader('../data/seminars_untagged/untagged', ids)
+    reader = WordListCorpusReader('../data/seminar_testdata/test_untagged', ids)
     ret = []
 
     for id in ids:
-        path = f"../data/seminars_untagged/untagged/{id}"
+        path = f"../data/seminar_testdata/test_untagged/{id}"
 
 
         emails = reader.words(id)

@@ -1,5 +1,6 @@
 import datetime
 import re
+
 import final_assignment.regex_tagger as rtagger
 
 
@@ -16,7 +17,6 @@ def generate_date_perms(norm_date):
 
 
 def generate_time_perms(norm_time):
-
     poss_times = [norm_time]
     t = datetime.datetime.strptime(norm_time, '%H:%M').strftime('%I:%M %p')
     poss_times.append(re.sub("PM", "pm", t))
@@ -44,7 +44,7 @@ def generate_time_perms(norm_time):
     poss_times.append(t)
     if t[0] == "0":
         poss_times.append(t[1:])
-    return poss_times
+    return reversed(sorted(poss_times, key=len))
 
 
 class Email:
@@ -63,6 +63,7 @@ class Email:
         self.header.analyse()
         self.tag_header()
         self.tag_abstract()
+        return self
 
     def tag_header(self):
         lines = self.header.get_untagged_header()
@@ -84,10 +85,10 @@ class Email:
         lines = lines_filtered
         para_lines = []
         tags = ["WHO:", "WHERE:", "WHEN:", "HOST", "TITLE:", "APPOINTMENT:", "Host:", "Appointment:", "Who:", "Where:",
-                "When:", "Title:"]
+                "DATE:", "TIME:", "PLACE:", "TOPIC:", "REMINDER:","SPEAKER"]
 
         for line in lines:
-            if not any(ext in line for ext in tags):
+            if not any(ext in line.upper() for ext in tags):
                 sents = rtagger.find_sentences(line)
                 if sents != "":
                     para_lines.append(f"<paragraph>{sents}</paragraph>")
@@ -104,7 +105,7 @@ class Email:
         tagged_text = []
         for line in lines:
             try:
-                line = re.sub("(" + self.header.speaker + ")", f"<speaker>{self.header.get_speaker()}</speaker", line)
+                line = re.sub("(" + self.header.speaker + ")", f"<speaker>{self.header.get_speaker()}</speaker>", line)
             except:
                 pass
             try:

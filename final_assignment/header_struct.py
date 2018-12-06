@@ -110,3 +110,4 @@ class Header:
         _, locations = tee.extract_entities()
         location = rtagger.find_locations_with_tag(self.get_untagged_header(), locations)
         self.location = location
+# todo improve name extraction to work around titles, middle names etc.
