@@ -13,7 +13,7 @@ if __name__ == '__main__':
         emails = pool.map(tag, emails)
 
     for email in emails:
-        print(email)
+        # print(email)
         f = open(f"../data/generated/{str(email.fileid)}", "w+")
         tagged_header = '\n'.join(map(str, email.header.tagged_header))
         tagged_abstract = '\n'.join(map(str, email.abstract.tagged_abstract)) + "\n"

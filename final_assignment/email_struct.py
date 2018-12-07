@@ -61,6 +61,7 @@ class Email:
 
     def tag_all(self):
         self.header.analyse()
+        self.abstract.analyse(self.header)
         self.tag_header()
         self.tag_abstract()
         return self
@@ -85,7 +86,7 @@ class Email:
         lines = lines_filtered
         para_lines = []
         tags = ["WHO:", "WHERE:", "WHEN:", "HOST", "TITLE:", "APPOINTMENT:", "Host:", "Appointment:", "Who:", "Where:",
-                "DATE:", "TIME:", "PLACE:", "TOPIC:", "REMINDER:","SPEAKER"]
+                "DATE:", "TIME:", "PLACE:", "TOPIC:", "REMINDER:", "SPEAKER", "POSTEDBY"]
 
         for line in lines:
             if not any(ext in line.upper() for ext in tags):

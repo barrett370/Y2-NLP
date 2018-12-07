@@ -1,14 +1,14 @@
 import re
 
-# for header
-# time_reg [ matches [0-12] + (0|1 * \s) + PM|AM|pm|am (12hr clock) ,
-#           matches 24hr clock
-
 # time_reg = [
 #     r'([0-9]|[0-1][0-9]|[2][0-3])(:|\s)([0-5][0-9])(\s{0,1})(AM|PM|am|pm|aM|Am|pM|Pm{2,2})|(([0][0-9]|[1][0-9]|[2][0-3])(\s{0,1})(AM|PM|am|pm|aM|Am|pM|Pm{2,2}))$',
 #     r'([0-1][0-9]|[2][0-3]):([0-5][0-9])',
 #     r'([0-9]|[0-1][0-9]|[2][0-3])(:|\s)([0-5][0-9])$']
 from final_assignment.misc_functions import flatten_list
+
+# for header
+# time_reg [ matches [0-12] + (0|1 * \s) + PM|AM|pm|am (12hr clock) ,
+#           matches 24hr clock
 
 time_reg = r'([0-9]|[0-1][0-9]|[2][0-3])(:|\s)([0-5][0-9])(\s{0,1})(AM|PM|am|pm|aM|Am|pM|Pm{2,2})|([0][0-9]|[1][0-9]|[2][0-3])(\s{0,1})(AM|PM|am|pm|aM|Am|pM|Pm{2,2})$|([0-1][0-9]|[2][0-3]):([0-5][0-9])|([0-9]|[0-1][0-9]|[2][0-3])(:|\s)([0-5][0-9])|([0-12]\s{0,1}(AM|PM|am|pm|aM|Am|pM|Pm|p[.]m[.]{2}))|[0-9]\s(p.m.|a.m.)'
 
@@ -18,6 +18,15 @@ dates_reg = [r'(([1-9])|(0[1-9])|(1[0-2]))\/((0[1-9])|([1-31]))\/((\d{2})|(\d{4}
              r'([0-3][0-9]|[0-9])-((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Sept|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))-([0-9][0-9])']
 
 sentence_reg = r'[A-Z][^\.!?]*'
+
+
+def extract_topic_tag(text):
+    for line in text:
+        if line.__contains__("Topic:"):
+            topic_line = line.split("Topic")[1]
+        elif line.__contains__("Type:"):
+            type_line = line.split("Type:")[1]
+    return (topic_line, type_line)
 
 
 def find_sentences(para):
@@ -96,6 +105,18 @@ def find_dates_with_tag(text):
     return flatten_list(ret[0])
 
 
+def find_locations(text, locations):
+    locations_occurring = []
+    for location in locations:
+        if text.__contains__(location):
+            locations_occurring.append((location, text.count(location)))
+    names_occurring_sorted = sorted(locations_occurring, key=lambda x: x[1])
+    if locations_occurring:
+        return names_occurring_sorted[0]
+    else:
+        return None
+
+
 def find_speakers(text, speakers):
     names_occurring = []
     for speaker in speakers:
@@ -156,4 +177,4 @@ def find_locations_with_tag(text, locations):
             ret += " " + each
         return ret
     except:
-        return None
+        return find_locations(text,locations)

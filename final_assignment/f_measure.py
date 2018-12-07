@@ -1,4 +1,5 @@
 # todo check count FN
+import random
 import re
 
 import nltk
@@ -33,6 +34,7 @@ def count_TP(generated, reference):
     fn = 0
     false_negatives = []
     false_positivies = []
+    true_positives = []
     # for line_g, line_r in zip(generated, reference):
     tagged_items_g = extract_tags(generated)
     tagged_items_r = extract_tags(reference)
@@ -50,9 +52,11 @@ def count_TP(generated, reference):
     for item in tagged_items_g:
         if item in tagged_items_r:
             tp += 1
+            true_positives.append(item)
         else:
             fp += 1
             false_positivies.append(item)
+
     for item in tagged_items_r:
         if item not in tagged_items_g:
             fn += 1
@@ -63,7 +67,7 @@ def count_TP(generated, reference):
 
 
 def calc_TP_FP(file_id):
-    path = f"../data/seminar_testdata/test_tagged/{file_id}"
+    path = f"/home/sam/nltk_data/corpora/seminar_test_data/test_tagged/{file_id}"
     email_r = nltk.data.load(path, format='text')
     email_r = re.sub("\n\n", "", email_r).split("\n")
     path = f"../data/generated/{file_id}"
@@ -72,7 +76,34 @@ def calc_TP_FP(file_id):
     import final_assignment.misc_functions as m
     email_g_string = m.concat(email_g).replace(" ", "")
     email_r_string = m.concat(email_r).replace(" ", "")
+    email_g_string.replace("<date>", "").replace("</date>", "")
     return count_TP(email_g_string, email_r_string)
+
+
+def interpret(fs, title, sorted):
+    import statistics as s
+    average = sum([pair[0] for pair in fs]) / (len(fs))
+
+    mode = s.mode(pair[0] for pair in fs)
+    maximum = max(
+        pair[0] for pair in fs)
+    minimum = min(pair[0] for pair in fs)
+    print(f"""Average f_measure = {average} Maximum = {maximum} Minimum = {minimum} Modal value = {mode}""")
+    import matplotlib.pyplot as plt
+    if not sorted:
+        random.shuffle(fs)
+    ys, xs = zip(*fs)
+    plt.scatter(x=xs, y=ys, marker="x")
+    plt.title(title)
+    plt.ylabel("F Measure")
+    plt.xlabel("File")
+    # plt.setp(plt.get_xticklabels(), visible=False)
+
+    # plt.axhline(y=average,xmin="300.txt",xmax="348.txt")
+
+    plt.plot("400.txt", average, color="red", label="Average")
+    plt.plot("490.txt", maximum, color="red", label="max")
+    plt.show()
 
 
 def f_measure():
@@ -80,7 +111,7 @@ def f_measure():
     # Recall (R) = TP / (TP + FN)
     # F = 1/((a)(1/P) + (1-a)(1/R))
     #       a is importance of recall over precision
-    ids = generate_file_ids(301, 485)
+    ids = generate_file_ids(301, 484)
     fs = []
     for _id in ids:
         tp, fp, fn = calc_TP_FP(_id)
@@ -94,22 +125,11 @@ def f_measure():
         # print(tp,fp,fn)
         fs.append((f, _id))
         print(f, _id)
-    import statistics as s
-    average = sum([pair[0] for pair in fs]) / (485 - 301)
-    mode = s.mode(pair[0] for pair in fs)
-    maximum = max(
-        pair[0] for pair in fs)
-    minimum = min(pair[0] for pair in fs)
-    print(f"""Average f_measure = {average} Maximum = {maximum} Minimum = {minimum} Modal value = {mode}""")
-    import matplotlib.pyplot as plt
-    ys, xs = zip(*fs)
-    plt.scatter(x=xs, y=ys, marker="x")
-
-    # plt.axhline(y=average,xmin="300.txt",xmax="348.txt")
-    plt.hlines(y=average, xmin="300.txt", xmax="485.txt", linestyles='dotted', label="average")
-    plt.plot("400.txt", average, color="red", label="Average")
-    plt.plot("490.txt", maximum, color="red", label="max")
-    plt.show()
+    sorted_fs = sorted(fs, key=lambda x: x[0])
+    interpret(sorted_fs, "Sorted all values", True)
+    interpret(sorted_fs[10:], "Sorted minus bottom 10%", True)
+    interpret(sorted_fs[10:], "Unsorted minus bottom 10%", False)
+    interpret(sorted_fs, "Unsorted all", False)
 
 
 f_measure()
