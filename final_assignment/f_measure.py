@@ -29,9 +29,9 @@ def extract_tags(line):
 
 
 def count_TP(generated, reference):
-    tp = 0
+    tp_g = 0
     fp = 0
-    fn = 0
+    tp_r = 0
     false_negatives = []
     false_positivies = []
     true_positives = []
@@ -51,7 +51,7 @@ def count_TP(generated, reference):
 
     for item in tagged_items_g:
         if item in tagged_items_r:
-            tp += 1
+            tp_g += 1
             true_positives.append(item)
         else:
             fp += 1
@@ -59,11 +59,11 @@ def count_TP(generated, reference):
 
     for item in tagged_items_r:
         if item not in tagged_items_g:
-            fn += 1
+            tp_r += 1
             false_negatives.append(item)
 
     # print(f"FP: {false_positivies} \n FN: {false_negatives}")
-    return tp, fp, fn
+    return tp_g, len(tagged_items_g), len(tagged_items_r)
 
 
 def calc_TP_FP(file_id):
@@ -80,7 +80,7 @@ def calc_TP_FP(file_id):
     return count_TP(email_g_string, email_r_string)
 
 
-def interpret(fs, title, sorted):
+def interpret(fs, title, sorted_flag):
     import statistics as s
     average = sum([pair[0] for pair in fs]) / (len(fs))
 
@@ -88,31 +88,31 @@ def interpret(fs, title, sorted):
     maximum = max(
         pair[0] for pair in fs)
     minimum = min(pair[0] for pair in fs)
-    print(f"""Average f_measure = {average} Maximum = {maximum} Minimum = {minimum} Modal value = {mode}""")
+    print(
+        f"""For {title}: \n Average f_measure = {average} Maximum = {maximum} Minimum = {minimum} Modal value = {mode}""")
     import matplotlib.pyplot as plt
-    if not sorted:
+    if not sorted_flag:
         random.shuffle(fs)
     ys, xs = zip(*fs)
-    fig= plt.figure()
-    plot = fig.add_subplot(1,1,1)
+    fig = plt.figure()
+    plot = fig.add_subplot(1, 1, 1)
     av = plot.axhline(y=average, color='r', linestyle='dotted', label="Mean")
     mod = plot.axhline(y=mode, color='b', linestyle='dotted', label="Modal")
-    plot.legend((av, mod), ('Mean = '+str(average)[:4], 'Mode = '+str(mode)[:4]))
+    plot.legend((av, mod), ('Mean = ' + str(average)[:4], 'Mode = ' + str(mode)[:4]))
     plot.scatter(x=xs, y=ys, marker="x")
     plot.set_title(title)
     plot.set_ylabel("F Measure")
     plot.set_xlabel("File")
     fig.savefig(f"../data/generated/plots/{title}")
-    # plt.setp(plt.get_xticklabels(), visible=False)
-
-    # plt.axhline(y=average,xmin="300.txt",xmax="348.txt")
 
     plt.plot("400.txt", average, color="red", label="Mean")
     plt.plot("490.txt", maximum, color="red", label="max")
     plt.show()
 
 
-def f_measure():
+if __name__ == '__main__':
+
+    # def f_measure():
     # Precision(P) = TP / (TP + FP)
     # Recall (R) = TP / (TP + FN)
     # F = 1/((a)(1/P) + (1-a)(1/R))
@@ -120,12 +120,16 @@ def f_measure():
     ids = generate_file_ids(301, 484)
     fs = []
     for _id in ids:
-        tp, fp, fn = calc_TP_FP(_id)
-        p = tp / (tp + fp)
-        r = tp / (tp + fn)
-        a = 0.5
+        tp_g, c_g, tp_r = calc_TP_FP(_id)
+        # p = tp / (tp + fp)
+        p = tp_g / c_g
+        r = tp_g / tp_r
+
+        # r = tp / (tp + fn)
+
         try:
-            f = 1 / (a * (1 / p) + (1 - a) * (1 / r))
+            # f = 1 / (a * (1 / p) + (1 - a) * (1 / r))
+            f = 2 * ((p * r) / (p + r))
         except:
             f = 0
         # print(tp,fp,fn)
@@ -138,4 +142,3 @@ def f_measure():
     interpret(sorted_fs, "Unsorted all values", False)
 
 
-f_measure()
