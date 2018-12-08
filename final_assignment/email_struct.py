@@ -77,7 +77,8 @@ class Email:
         # sents = rtagger.find_sentences(paras)
 
         lines = self.abstract.get_untagged_abstract().split("\n\n")
-
+        # import final_assignment.misc_functions as m
+        # lines = re.findall(r"(\n\n)|(\n\t)",self.abstract.get_untagged_abstract())
         lines_filtered = []
         filters = ['', ' ', '-- ']
         for line in lines:

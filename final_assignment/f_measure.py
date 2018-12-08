@@ -18,7 +18,7 @@ def extract_tags(line):
     tagged_items = []
     for tag in tags:
         r = f"{tag[0]}.*?{tag[1]}"
-        tagged_items.append(re.findall(r, line))
+        tagged_items.append(re.findall(r, line, re.DOTALL))
     import final_assignment.misc_functions as m
     m.flatten_list(tagged_items)
     ret = []
@@ -93,15 +93,21 @@ def interpret(fs, title, sorted):
     if not sorted:
         random.shuffle(fs)
     ys, xs = zip(*fs)
-    plt.scatter(x=xs, y=ys, marker="x")
-    plt.title(title)
-    plt.ylabel("F Measure")
-    plt.xlabel("File")
+    fig= plt.figure()
+    plot = fig.add_subplot(1,1,1)
+    av = plot.axhline(y=average, color='r', linestyle='dotted', label="Mean")
+    mod = plot.axhline(y=mode, color='b', linestyle='dotted', label="Modal")
+    plot.legend((av, mod), ('Mean = '+str(average)[:4], 'Mode = '+str(mode)[:4]))
+    plot.scatter(x=xs, y=ys, marker="x")
+    plot.set_title(title)
+    plot.set_ylabel("F Measure")
+    plot.set_xlabel("File")
+    fig.savefig(f"../data/generated/plots/{title}")
     # plt.setp(plt.get_xticklabels(), visible=False)
 
     # plt.axhline(y=average,xmin="300.txt",xmax="348.txt")
 
-    plt.plot("400.txt", average, color="red", label="Average")
+    plt.plot("400.txt", average, color="red", label="Mean")
     plt.plot("490.txt", maximum, color="red", label="max")
     plt.show()
 
@@ -127,9 +133,9 @@ def f_measure():
         print(f, _id)
     sorted_fs = sorted(fs, key=lambda x: x[0])
     interpret(sorted_fs, "Sorted all values", True)
-    interpret(sorted_fs[10:], "Sorted minus bottom 10%", True)
-    interpret(sorted_fs[10:], "Unsorted minus bottom 10%", False)
-    interpret(sorted_fs, "Unsorted all", False)
+    interpret(sorted_fs[3:], "Sorted minus outliers", True)
+    interpret(sorted_fs[3:], "Unsorted minus outliers", False)
+    interpret(sorted_fs, "Unsorted all values", False)
 
 
 f_measure()
