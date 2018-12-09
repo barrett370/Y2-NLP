@@ -1,4 +1,5 @@
 import gensim
+# todo use wordnet to improve add_to() as the word2vec vocab is weak
 
 model = gensim.models.KeyedVectors.load("../data/g_news_model.model")
 

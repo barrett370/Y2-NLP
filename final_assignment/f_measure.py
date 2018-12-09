@@ -5,6 +5,7 @@ import re
 import nltk
 
 
+
 def generate_file_ids(s, e):
     ret = []
     for i in range(s, e):
@@ -13,7 +14,7 @@ def generate_file_ids(s, e):
 
 
 def extract_tags(line):
-    tags = [ ("<speaker>", "</speaker>"),
+    tags = [("<sentence>", "</sentence>"), ("<paragraph>", "</paragraph>"),("<speaker>", "</speaker>"),
             ("<location>", "</location>"), ("<stime>", "</stime>"), ("<etime>", "</etime>")]
     tagged_items = []
     for tag in tags:
@@ -84,9 +85,14 @@ def calc_TP_FP(file_id):
 
 def interpret(fs, title, sorted_flag):
     import statistics as s
+    # import scipy.stats as s
     average = sum([pair[0] for pair in fs]) / (len(fs))
+    try:
+        mode = s.mode(pair[0] for pair in fs)
+    except:
+        strip_fs = [pair[0] for pair in fs]
+        mode = sorted(strip_fs, key=strip_fs.count, reverse=True)[0]
 
-    mode = s.mode(pair[0] for pair in fs)
     import matplotlib.pyplot as plt
     if not sorted_flag:
         random.shuffle(fs)
@@ -139,6 +145,7 @@ if __name__ == '__main__':
     print(ps)
     print(rs)
     sorted_fs = sorted(fs, key=lambda x: x[0])
+    # sorted_fs = fs.sort(key=lambda x : x[0])
     sorted_pr = sorted(pr, key=lambda x: x[0])
     # interpret(sorted_pr, "Precision*Recall against Precision+Recall", True)
 
@@ -149,20 +156,34 @@ if __name__ == '__main__':
     import statistics as s
 
     mean_f = sum([pair[0] for pair in fs]) / (len(fs))
+    try:
+        mode_f = s.mode(pair[0] for pair in fs)
+    except s.StatisticsError:
+        strip_fs = [pair[0] for pair in fs]
+        mode_f = sorted(strip_fs, key=strip_fs.count, reverse=True)[0]
 
-    mode_f = s.mode(pair[0] for pair in fs)
     maximum_f = max(
         pair[0] for pair in fs)
     minimum_f = min(pair[0] for pair in fs)
 
     mean_p = sum([item for item in ps]) / (len(pr))
-    mode_p = s.mode(item for item in ps)
+    try:
+        mode_p = s.mode(item for item in ps)
+    except s.StatisticsError:
+        strip_ps = [pair[0] for pair in ps]
+        mode_r = sorted(strip_ps, key=strip_ps.count, reverse=True)[0]
+
     maximum_p = max(
         item for item in ps)
     minimum_p = min(item for item in ps)
 
     mean_r = sum([item for item in rs]) / (len(rs))
-    mode_r = s.mode(item for item in rs)
+    try:
+        mode_r = s.mode(item for item in rs)
+    except s.StatisticsError:
+        strip_rs = [pair[0] for pair in rs]
+        mode_r = sorted(strip_rs, key=strip_rs.count, reverse=True)[0]
+
     maximum_r = max(
         item for item in rs)
     minimum_r = min(item for item in rs)
@@ -171,7 +192,17 @@ if __name__ == '__main__':
             Mean Precision = {mean_p} Maximum = {maximum_p} Minimum = {minimum_p} Modal Value = {mode_p}
             Mean Recall = {mean_r} Maximum = {maximum_r} Minimum = {minimum_r} Modal Value = {mode_r}""")
     import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
 
-    ys, xs = zip(*pr)
-    plt.scatter(x=xs, y=ys)
+    Axes3D
+    ys, xs = zip(*fs)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(ps, rs, ys)
+    ax.set_xlabel("Precision")
+
+    ax.set_zlabel("F measure")
+    ax.set_ylabel("Recall")
+    ax.set_title("Precision against Recall against F measure")
+    fig.savefig("../data/generated/plots/3d")
     plt.show()

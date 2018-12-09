@@ -21,6 +21,7 @@ sentence_reg = r'[A-Z][^\.!?]*'
 
 
 def extract_topic_tag(text):
+    topic_line, type_line = None, None
     for line in text:
         if line.__contains__("Topic:"):
             topic_line = line.split("Topic")[1]  # todo include multi-lines (until new tag starts)

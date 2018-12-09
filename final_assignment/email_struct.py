@@ -48,7 +48,7 @@ def generate_time_perms(norm_time):
         if t[0] == "0":
             pt.append(t[1:])
     poss_times += pt
-    ret = sorted(poss_times, key=lambda x:len(x),reverse=True)
+    ret = sorted(poss_times, key=lambda x: len(x), reverse=True)
 
     return list(set(ret))
 
@@ -83,6 +83,11 @@ class Email:
         # sents = rtagger.find_sentences(paras)
 
         lines = self.abstract.get_untagged_abstract().split("\n\n")
+        # lines += self.abstract.get_untagged_abstract().split("\n\t")
+        # lines = list(set(lines))
+        # poss_paras = re.split(r'\n\n',self.abstract.get_untagged_abstract())
+        # poss_paras += re.split(r'\n\t',self.abstract.get_untagged_abstract())
+        # lines = list(set(poss_paras))
         # import final_assignment.misc_functions as m
         # lines = re.findall(r"(\n\n)|(\n\t)",self.abstract.get_untagged_abstract())
         lines_filtered = []
@@ -91,10 +96,14 @@ class Email:
             if line not in filters:
                 lines_filtered.append(line)
         lines = lines_filtered
+        # print(lines)
         para_lines = []
-        tags = ["WHO:", "WHERE:", "WHEN:", "HOST", "TITLE:", "APPOINTMENT:", "Host:", "Appointment:", "Who:", "Where:",
-                "DATE:", "TIME:", "PLACE:", "TOPIC:", "REMINDER:", "SPEAKER", "POSTEDBY"]
+        tags = ['host:', 'Host:', 'SPEAKER', 'WHO:', 'Who:', 'who:', 'TIME:', 'APPOINTMENT:', 'PLACE:', 'when:',
+                'HOST:', 'title:', 'POSTEDBY:', 'Appointment:', 'When:', 'Where:', 'TITLE:', 'DATE:', 'where:',
+                'TOPIC:', 'HOST:', 'SPEAKER:', 'WHERE:', 'Title:', 'WHEN:', 'Speaker:', 'speaker:', 'REMINDER:']
 
+
+        # temp = rtagger.find_paras(self.abstract.get_untagged_abstract())
         for line in lines:
             if not any(ext in line.upper() for ext in tags):
                 sents = rtagger.find_sentences(line)
