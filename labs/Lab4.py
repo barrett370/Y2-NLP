@@ -22,7 +22,6 @@ rd_parser = nltk.RecursiveDescentParser(grammar1)
 
 #
 # tokens = 'Michael likes children'.split()
-from nltk import load_parser
 
 #
 # cp = load_parser('predef_grammar.fcfg', trace=2)
@@ -42,7 +41,7 @@ sr_parser = nltk.ShiftReduceParser(grammar1, trace=2)
 c_parser = nltk.ChartParser(grammar1, trace=2)
 
 sents = open('sents', 'r')
-import Lab3
+from labs import Lab3
 
 tagger = Lab3.tagger
 tagger.__init__(tagger)

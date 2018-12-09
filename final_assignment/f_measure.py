@@ -13,7 +13,7 @@ def generate_file_ids(s, e):
 
 
 def extract_tags(line):
-    tags = [("<sentence>", "</sentence>"), ("<paragraph>", "</paragraph>"), ("<speaker>", "</speaker>"),
+    tags = [ ("<speaker>", "</speaker>"),
             ("<location>", "</location>"), ("<stime>", "</stime>"), ("<etime>", "</etime>")]
     tagged_items = []
     for tag in tags:
@@ -25,6 +25,7 @@ def extract_tags(line):
     for each in tagged_items:
         for item in each:
             ret.append(item)
+
     return ret
 
 
@@ -33,11 +34,12 @@ def count_TP(generated, reference):
     fp = 0
     tp_r = 0
     false_negatives = []
-    false_positivies = []
+    false_positives = []
     true_positives = []
     # for line_g, line_r in zip(generated, reference):
-    tagged_items_g = extract_tags(generated)
-    tagged_items_r = extract_tags(reference)
+    tagged_items_g = list(set(extract_tags(generated)))
+
+    tagged_items_r = list(set(extract_tags(reference)))
     fil_g = []
     for each in tagged_items_g:
         if each:
@@ -55,14 +57,14 @@ def count_TP(generated, reference):
             true_positives.append(item)
         else:
             fp += 1
-            false_positivies.append(item)
+            false_positives.append(item)
 
     for item in tagged_items_r:
         if item not in tagged_items_g:
             tp_r += 1
             false_negatives.append(item)
 
-    # print(f"FP: {false_positivies} \n FN: {false_negatives}")
+    # print(f"FP: {false_positives} \n FN: {false_negatives}")
     return tp_g, len(tagged_items_g), len(tagged_items_r)
 
 
@@ -85,11 +87,6 @@ def interpret(fs, title, sorted_flag):
     average = sum([pair[0] for pair in fs]) / (len(fs))
 
     mode = s.mode(pair[0] for pair in fs)
-    maximum = max(
-        pair[0] for pair in fs)
-    minimum = min(pair[0] for pair in fs)
-    print(
-        f"""For {title}: \n Average f_measure = {average} Maximum = {maximum} Minimum = {minimum} Modal value = {mode}""")
     import matplotlib.pyplot as plt
     if not sorted_flag:
         random.shuffle(fs)
@@ -105,8 +102,6 @@ def interpret(fs, title, sorted_flag):
     plot.set_xlabel("File")
     fig.savefig(f"../data/generated/plots/{title}")
 
-    plt.plot("400.txt", average, color="red", label="Mean")
-    plt.plot("490.txt", maximum, color="red", label="max")
     plt.show()
 
 
@@ -119,26 +114,64 @@ if __name__ == '__main__':
     #       a is importance of recall over precision
     ids = generate_file_ids(301, 484)
     fs = []
+    pr = []
+    ps = []
+    rs = []
     for _id in ids:
         tp_g, c_g, tp_r = calc_TP_FP(_id)
-        # p = tp / (tp + fp)
         p = tp_g / c_g
         r = tp_g / tp_r
 
-        # r = tp / (tp + fn)
-
         try:
-            # f = 1 / (a * (1 / p) + (1 - a) * (1 / r))
+
             f = 2 * ((p * r) / (p + r))
         except:
             f = 0
+        if f is 0:
+            print(_id)
         # print(tp,fp,fn)
         fs.append((f, _id))
-        print(f, _id)
+        pr.append(((p * r), (p + r)))
+        ps.append(p)
+        rs.append(r)
+        # print(f"For {_id} Precision  = {p}, \n Recall = {r} \n F measure = {f}")
+        # print(f, _id)
+    print(ps)
+    print(rs)
     sorted_fs = sorted(fs, key=lambda x: x[0])
+    sorted_pr = sorted(pr, key=lambda x: x[0])
+    # interpret(sorted_pr, "Precision*Recall against Precision+Recall", True)
+
     interpret(sorted_fs, "Sorted all values", True)
     interpret(sorted_fs[3:], "Sorted minus outliers", True)
     interpret(sorted_fs[3:], "Unsorted minus outliers", False)
     interpret(sorted_fs, "Unsorted all values", False)
+    import statistics as s
 
+    mean_f = sum([pair[0] for pair in fs]) / (len(fs))
 
+    mode_f = s.mode(pair[0] for pair in fs)
+    maximum_f = max(
+        pair[0] for pair in fs)
+    minimum_f = min(pair[0] for pair in fs)
+
+    mean_p = sum([item for item in ps]) / (len(pr))
+    mode_p = s.mode(item for item in ps)
+    maximum_p = max(
+        item for item in ps)
+    minimum_p = min(item for item in ps)
+
+    mean_r = sum([item for item in rs]) / (len(rs))
+    mode_r = s.mode(item for item in rs)
+    maximum_r = max(
+        item for item in rs)
+    minimum_r = min(item for item in rs)
+    print(
+        f"""Mean f_measure = {mean_f} Maximum = {maximum_f} Minimum = {minimum_f} Modal value = {mode_f} \n 
+            Mean Precision = {mean_p} Maximum = {maximum_p} Minimum = {minimum_p} Modal Value = {mode_p}
+            Mean Recall = {mean_r} Maximum = {maximum_r} Minimum = {minimum_r} Modal Value = {mode_r}""")
+    import matplotlib.pyplot as plt
+
+    ys, xs = zip(*pr)
+    plt.scatter(x=xs, y=ys)
+    plt.show()

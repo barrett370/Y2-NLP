@@ -15,6 +15,7 @@ class Header:
         self.tagged_header = None
         self.times = []
         self.dates = []
+        self.topic = None
 
     def __str__(self) -> str:
 
@@ -33,6 +34,7 @@ class Header:
         self.analyse_dates()
         self.analyse_speakers()
         self.analyse_locations()
+        self.extract_topic()
 
     def get_untagged_header(self):
         return self.untagged_header
@@ -57,6 +59,10 @@ class Header:
 
     def get_speaker(self):
         return self.speaker
+
+    def extract_topic(self):
+        topic, _ = rtagger.extract_topic_tag(self.untagged_header)
+        self.topic = topic
 
     def analyse_times(self):
 

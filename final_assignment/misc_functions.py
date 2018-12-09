@@ -44,7 +44,7 @@ def twelve_to_twenty_four(time_am_pm):
         ret.append(time[1])
     else:
         ret.append(time[2])
-    if 1 <= int(ret[0]) <= 7:  ## if hour is in range 1 -> 7 without PM denotion inferred that in afternoon
+    if 1 <= int(ret[0]) <= 7:  # if hour is in range 1 -> 7 without PM denotation inferred that in afternoon
         ret[0] = int(ret[0]) + 12
     return ret[0], ret[1]
 
@@ -64,6 +64,6 @@ def formal_date_format(dates_list):
         ret = ret[:-1]
         format_check = ret.split("-")
         if len(format_check[0]) == 1:
-            ret = "0"+ret
+            ret = "0" + ret
         dates_ret.append(ret)
     return dates_ret

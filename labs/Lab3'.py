@@ -1,9 +1,4 @@
-from multiprocessing import Queue, Process
-
-from nltk.corpus import brown
-
-import Lab3
-import seminar_data_parser
+from labs import Lab3, seminar_data_parser
 
 t = Lab3.tagger()
 # /t.__init__()

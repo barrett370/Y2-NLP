@@ -23,10 +23,10 @@ sentence_reg = r'[A-Z][^\.!?]*'
 def extract_topic_tag(text):
     for line in text:
         if line.__contains__("Topic:"):
-            topic_line = line.split("Topic")[1]
+            topic_line = line.split("Topic")[1]  # todo include multi-lines (until new tag starts)
         elif line.__contains__("Type:"):
             type_line = line.split("Type:")[1]
-    return (topic_line, type_line)
+    return topic_line, type_line
 
 
 def find_sentences(para):
@@ -78,7 +78,8 @@ def find_times(text):
     if extract:
         times.append(extract)
     try:
-        return flatten_list(times[0])
+        ret = sorted(times, key=lambda x: len(x), reverse=True)
+        return flatten_list(ret[0])
     except:
         return []
 
@@ -97,9 +98,18 @@ def find_times_with_tag(text):
 def find_dates_with_tag(text):
     ret = []
     for line in text:
+        # line = line.lower()
         if line.__contains__("Date:"):
             ret.append(find_dates(line))
         elif line.__contains__("Dates:"):
+            ret.append(find_dates(line))
+        elif line.__contains__("When:"):
+            ret.append(find_dates(line))
+        elif line.__contains__("WHEN:"):
+            ret.append(find_dates(line))
+        elif line.__contains__("DATE:"):
+            ret.append(find_dates(line))
+        elif line.__contains__("DATES:"):
             ret.append(find_dates(line))
 
     return flatten_list(ret[0])
@@ -137,6 +147,12 @@ def find_speakers_with_tag(text, speakers):
             flag = "w"
             ret.append(line)
         elif line.__contains__("Speaker:"):
+            flag = "w"
+            ret.append(line)
+        elif line.__contains__("SPEAKER:"):
+            flag = "w"
+            ret.append(line)
+        elif line.__contains__("WHO:"):
             flag = "w"
             ret.append(line)
 
@@ -177,4 +193,4 @@ def find_locations_with_tag(text, locations):
             ret += " " + each
         return ret
     except:
-        return find_locations(text,locations)
+        return find_locations(text, locations)

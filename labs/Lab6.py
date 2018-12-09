@@ -2,7 +2,7 @@ from nltk.sem import relextract
 
 
 def wikify(query):
-    import sys, http.client, urllib.request, urllib.parse, urllib.error, json
+    import sys, http.client, urllib.parse, urllib.error, json
 
     from pprint import pprint
 
@@ -62,7 +62,8 @@ def wikify(query):
         url_titles = [urllib.parse.quote_plus(i) for i in titles]
         pprint(url_titles)
 
-import seminar_data_parser
+
+from labs import seminar_data_parser
 
 for each in seminar_data_parser.get_untagged():
     for rel in relextract.extract_rels('ORG', 'LOC', doc, corpus='ieer', pattern=IN):

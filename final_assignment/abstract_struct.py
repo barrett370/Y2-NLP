@@ -40,7 +40,7 @@ class Abstract:
                 # print("Changed etime " + str(header.end_time))
 
         if header.speaker is None:
-            speaker = self.analyse_speaker(header)
+            speaker = self.analyse_speaker()
             if speaker is not None:
                 header.speaker = speaker
                 # print("Changed Speaker " + str(header.speaker))
@@ -59,7 +59,7 @@ class Abstract:
         except:
             return None
 
-    def analyse_speaker(self, header):
+    def analyse_speaker(self):
         speakers, _ = tee.extract_entities()
         speaker = rtagger.find_speakers_with_tag(self.get_untagged_abstract(), speakers)
         if speaker:
@@ -71,7 +71,6 @@ class Abstract:
         return speaker_r
 
     def analyse_time(self, header):
-        start_time = None
         end_time = None
         times_found = rtagger.find_times_with_tag(header.get_untagged_header())
         formal_times = []

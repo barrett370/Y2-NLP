@@ -13,6 +13,7 @@ def generate_date_perms(norm_date):
         poss_dates.append(t[1:])
 
     poss_dates.append(norm_date)
+
     return poss_dates
 
 
@@ -37,14 +38,19 @@ def generate_time_perms(norm_time):
     poss_times.append(re.sub("AM", "am", t))
     poss_times.append(re.sub("AM", "a.m.", t))
     poss_times.append(re.sub("AM", "a.m", t))
-
-    if t[0] == "0":
-        poss_times.append(t[1:])
     t = datetime.datetime.strptime(norm_time, '%H:%M').strftime('%I:%M')
     poss_times.append(t)
-    if t[0] == "0":
-        poss_times.append(t[1:])
-    return reversed(sorted(poss_times, key=len))
+    pt = []
+    for t in poss_times:
+        if t[0] == "0":
+            pt.append(t[1:])
+
+        if t[0] == "0":
+            pt.append(t[1:])
+    poss_times += pt
+    ret = sorted(poss_times, key=lambda x:len(x),reverse=True)
+
+    return list(set(ret))
 
 
 class Email:
