@@ -22,10 +22,10 @@ def strip_other_tags(tags, line, excl):
 
 
 def extract_tags(line):
-    tags = [("<sentence>", "</sentence>"), ("<paragraph>", "</paragraph>"), ("<speaker>", "</speaker>"),
-            ("<location>", "</location>"), ("<stime>", "</stime>"), ("<etime>", "</etime>")]
-    # tags = [("<speaker>", "</speaker>"),
+    # tags = [("<sentence>", "</sentence>"), ("<paragraph>", "</paragraph>"), ("<speaker>", "</speaker>"),
     #         ("<location>", "</location>"), ("<stime>", "</stime>"), ("<etime>", "</etime>")]
+    tags = [("<speaker>", "</speaker>"),
+            ("<location>", "</location>"), ("<stime>", "</stime>"), ("<etime>", "</etime>")]
     # tags = [("<speaker","</speaker>")]
     # tags = [("<location>", "</location>")]
     # tags = [("<stime>", "</stime>"), ("<etime>", "</etime>")]
@@ -141,27 +141,8 @@ if __name__ == '__main__':
     pr = []
     ps = []
     rs = []
-    banned = ["328.txt",
-              "344.txt",
-              "377.txt",
-              "398.txt",
-              "407.txt",
-              "410.txt",
-              "415.txt",
-              "440.txt",
-              "443.txt",
-              "444.txt",
-              "445.txt",
-              "446.txt",
-              "447.txt",
-              "450.txt",
-              "463.txt",
-              "472.txt",
-              "474.txt",
-              "476.txt"]
-    banned = []
+
     for _id in ids:
-        if _id not in banned:
             tp_g, c_g, tp_r = calc_TP_FP(_id)
 
             try:
