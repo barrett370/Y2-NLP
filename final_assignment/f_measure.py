@@ -1,9 +1,7 @@
 # todo check count FN
 import random
-import re
 
 import nltk
-
 
 
 def generate_file_ids(s, e):
@@ -13,21 +11,36 @@ def generate_file_ids(s, e):
     return ret
 
 
+import re
+
+
+def strip_other_tags(tags, line, excl):
+    for tag in tags:
+        # if tag != excl:
+            line = re.sub(f'{tag[1]}', '', re.sub(f'{tag[0]}', '', line))
+    return line
+
+
 def extract_tags(line):
-    tags = [("<sentence>", "</sentence>"), ("<paragraph>", "</paragraph>"),("<speaker>", "</speaker>"),
+    tags = [("<sentence>", "</sentence>"), ("<paragraph>", "</paragraph>"), ("<speaker>", "</speaker>"),
             ("<location>", "</location>"), ("<stime>", "</stime>"), ("<etime>", "</etime>")]
     tagged_items = []
     for tag in tags:
         r = f"{tag[0]}.*?{tag[1]}"
-        tagged_items.append(re.findall(r, line, re.DOTALL))
+        l = re.findall(r, line, re.DOTALL)
+        for each in l:
+            tagged_items.append(strip_other_tags(tags, each, tag))
     import final_assignment.misc_functions as m
     m.flatten_list(tagged_items)
     ret = []
     for each in tagged_items:
         for item in each:
             ret.append(item)
+    de_tagged = []
+    # for each in ret:
+    #     de_tagged.append(strip_other_tags(tags, each))
 
-    return ret
+    return tagged_items
 
 
 def count_TP(generated, reference):
@@ -170,8 +183,8 @@ if __name__ == '__main__':
     try:
         mode_p = s.mode(item for item in ps)
     except s.StatisticsError:
-        strip_ps = [pair[0] for pair in ps]
-        mode_r = sorted(strip_ps, key=strip_ps.count, reverse=True)[0]
+        # strip_ps = [pair[0] for pair in ps]
+        mode_r = sorted(ps, key=ps.count, reverse=True)[0]
 
     maximum_p = max(
         item for item in ps)
@@ -181,8 +194,8 @@ if __name__ == '__main__':
     try:
         mode_r = s.mode(item for item in rs)
     except s.StatisticsError:
-        strip_rs = [pair[0] for pair in rs]
-        mode_r = sorted(strip_rs, key=strip_rs.count, reverse=True)[0]
+        # strip_rs = [pair[0] for pair in rs]
+        mode_r = sorted(rs, key=rs.count, reverse=True)[0]
 
     maximum_r = max(
         item for item in rs)

@@ -1,13 +1,22 @@
 import gensim
+import gensim.downloader as api
+
 # todo use wordnet to improve add_to() as the word2vec vocab is weak
 
-model = gensim.models.KeyedVectors.load("../data/g_news_model.model")
-
+model = gensim.models.KeyedVectors.load("../data/conc_model.model")
+# model = api.load("conceptnet-numberbatch-17-06-300")  # download the model and return as object ready for use
 
 def sim_list(topic, words, key):  # todo should this sum the similarities?
     global score
     scores = []
-    for item in words:
+    words_expanded = []+words
+    for word in words:
+        try:
+            most_similar = [pair[0] for pair in model.most_similar(word)]
+            words_expanded += most_similar
+        except:
+            pass
+    for item in list(set(words_expanded)):
         for word in topic.split(" "):
             score = 0
             try:
@@ -69,7 +78,7 @@ class Ontology:
         for l in scores:
             for t in l:
                 flat_scores.append(t)
-        print(file_name + str(flat_scores))
+        # print(file_name + str(flat_scores))
         if not flat_scores:
             for key in self.traversal_info.keys():
                 score = 0
