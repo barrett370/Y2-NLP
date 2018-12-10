@@ -135,13 +135,15 @@ def find_speakers(text, speakers):
             names_occurring.append((speaker, text.count(speaker)))
     names_occurring_sorted = sorted(names_occurring, key=lambda x: x[1])
     if names_occurring:
-        return names_occurring_sorted[0]
+        return names_occurring_sorted[0][0]
     else:
         return None
 
 
 def find_speakers_with_tag(text, speakers):
     ret = []
+    import final_assignment.stanford_tagger as stagger
+    st = stagger.StanfordTagger()
     flag = None
     for line in text:
         if line.__contains__("Who:"):
@@ -156,23 +158,71 @@ def find_speakers_with_tag(text, speakers):
         elif line.__contains__("WHO:"):
             flag = "w"
             ret.append(line)
+        elif line.__contains__("who:"):
+            flag = "w"
+            ret.append(line)
+        elif line.__contains__("speaker:"):
+            flag = "w"
+            ret.append(line)
 
     if flag == "w":
-        title_list = ['dr.', 'dr', 'mr', 'professor', 'mr.', 'mrs.', 'mrs', 'ms.', 'ms']
-        ret_list = ret[0].split(" ")
-        t = []
-        for each in ret_list:
-            if each != '':
-                t.append(each)
-        ret_list = t
-        ret_list = ret_list[1:]
-        if title_list.__contains__(str.lower(ret_list[0])):
-            return ret_list[0] + " " + ret_list[1] + " " + ret_list[2]
-        else:
-            return ret_list[0] + " " + ret_list[1]
-    else:
-        return find_speakers(text, speakers)
 
+        names = []
+        for each in ret:
+            classified_lines = st.classify(each)
+            names += list(filter(lambda x: x[1] == "PERSON", classified_lines))
+        title_list = ['dr.', 'dr', 'mr', 'professor', 'mr.', 'mrs.', 'mrs', 'ms.', 'ms']
+        t = None
+        for title in title_list:
+            if line.lower().__contains__(title):
+                t = title
+                break
+        import final_assignment.misc_functions as m
+        names_S = [pair[0] for pair in names]
+        names = names_S
+        if names:
+            if len(names) > 3:
+                if t:
+                    return t + m.concat(names[:3])
+                else:
+                    return m.concat(names[:3])
+            else:
+                if t:
+                    return t + m.concat(names)
+                else:
+                    return m.concat(names)
+        else:
+            ret_list = ret[0].split(" ")
+            t = []
+            for each in ret_list:
+                if each != '':
+                    t.append(each)
+            ret_list = t
+            ret_list = ret_list[1:]
+            if title_list.__contains__(str.lower(ret_list[0])):
+                return ret_list[0] + " " + ret_list[1] + " " + ret_list[2]
+            else:
+                return ret_list[0] + " " + ret_list[1]
+    else:
+        # print("Cant find normally"+str(text))
+
+        import final_assignment.misc_functions as m
+        text_string = m.concat(text)
+        classified_lines = st.classify(text_string)
+        names = list(filter(lambda x: x[1] == "PERSON", classified_lines))
+
+        if names:
+            names_S = [pair[0] for pair in names]
+            names = names_S
+            if len(names) > 3:
+                return m.concat(names[:3])
+            else:
+                return m.concat(names)
+        else:
+            return find_speakers(text, speakers)
+
+
+# return find_speakers(text, speakers)
 
 def find_locations_with_tag(text, locations):
     ret = []

@@ -1,8 +1,8 @@
-
 # import final_assignment.seminar_data_extractor as extractor
+import re
+
 import final_assignment.misc_functions
 import final_assignment.seminar_data_extractor
-import re
 
 
 def setify(xs):
@@ -21,6 +21,8 @@ def strip_tags(l):
         else:
             ret.append(entry)
     return ret
+
+
 
 
 def extract_entities():

@@ -63,7 +63,8 @@ class Abstract:
         speakers, _ = tee.extract_entities()
         speaker = rtagger.find_speakers_with_tag(self.get_untagged_abstract(), speakers)
         if speaker:
-            speaker = speaker[0]
+            if speaker is list:
+                speaker = speaker[0]
         import re
         speaker_r = None
         if speaker is not None:

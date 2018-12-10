@@ -6,21 +6,21 @@ import gensim.downloader as api
 model = gensim.models.KeyedVectors.load("../data/conc_model.model")
 # model = api.load("conceptnet-numberbatch-17-06-300")  # download the model and return as object ready for use
 
-def sim_list(topic, words, key):  # todo should this sum the similarities?
+def sim_list(topic, keywords, key):  # todo should this sum the similarities?
     global score
     scores = []
-    words_expanded = []+words
-    for word in words:
-        try:
-            most_similar = [pair[0] for pair in model.most_similar(word)]
-            words_expanded += most_similar
-        except:
-            pass
-    for item in list(set(words_expanded)):
+    # words_expanded = [] + keywords
+    # for word in words:
+    #     try:
+    #         most_similar = [pair[0] for pair in model.most_similar(word)]
+    #         words_expanded += most_similar
+    #     except:
+    #         pass
+    for key_word in keywords:
         for word in topic.split(" "):
             score = 0
             try:
-                score += model.similarity(item, word.lower())
+                score += model.similarity(key_word, word.lower())
             except:  # Word not in vocabulary
                 pass
         if score is not 0:
@@ -73,7 +73,7 @@ class Ontology:
         global max_score_item
         scores = [(sim_list(topic, self.traversal_info[key]['topic_words'], key))
                   for key in self.traversal_info.keys()]
-
+        print(scores)
         flat_scores = []
         for l in scores:
             for t in l:
@@ -96,7 +96,7 @@ class Ontology:
             for tag in self.traversal_info.keys():
                 sum_score = 0
                 for score in flat_scores:
-                    if score[0] is tag:
+                    if score[0] == tag:
                         sum_score += score[1]
                 summed_scores.append((tag, sum_score))
             flat_scores = summed_scores

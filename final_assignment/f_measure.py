@@ -17,13 +17,18 @@ import re
 def strip_other_tags(tags, line, excl):
     for tag in tags:
         # if tag != excl:
-            line = re.sub(f'{tag[1]}', '', re.sub(f'{tag[0]}', '', line))
+        line = re.sub(f'{tag[1]}', '', re.sub(f'{tag[0]}', '', line))
     return line
 
 
 def extract_tags(line):
     tags = [("<sentence>", "</sentence>"), ("<paragraph>", "</paragraph>"), ("<speaker>", "</speaker>"),
             ("<location>", "</location>"), ("<stime>", "</stime>"), ("<etime>", "</etime>")]
+    # tags = [("<speaker>", "</speaker>"),
+    #         ("<location>", "</location>"), ("<stime>", "</stime>"), ("<etime>", "</etime>")]
+    # tags = [("<speaker","</speaker>")]
+    # tags = [("<location>", "</location>")]
+    # tags = [("<stime>", "</stime>"), ("<etime>", "</etime>")]
     tagged_items = []
     for tag in tags:
         r = f"{tag[0]}.*?{tag[1]}"
@@ -43,7 +48,7 @@ def extract_tags(line):
     return tagged_items
 
 
-def count_TP(generated, reference):
+def count_all(generated, reference):
     tp_g = 0
     fp = 0
     tp_r = 0
@@ -79,7 +84,7 @@ def count_TP(generated, reference):
             false_negatives.append(item)
 
     # print(f"FP: {false_positives} \n FN: {false_negatives}")
-    return tp_g, len(tagged_items_g), len(tagged_items_r)
+    return tp_g + 1, len(tagged_items_g) + 1, len(tagged_items_r) + 1
 
 
 def calc_TP_FP(file_id):
@@ -93,7 +98,7 @@ def calc_TP_FP(file_id):
     email_g_string = m.concat(email_g).replace(" ", "")
     email_r_string = m.concat(email_r).replace(" ", "")
     email_g_string.replace("<date>", "").replace("</date>", "")
-    return count_TP(email_g_string, email_r_string)
+    return count_all(email_g_string, email_r_string)
 
 
 def interpret(fs, title, sorted_flag):
@@ -136,23 +141,51 @@ if __name__ == '__main__':
     pr = []
     ps = []
     rs = []
+    banned = ["328.txt",
+              "344.txt",
+              "377.txt",
+              "398.txt",
+              "407.txt",
+              "410.txt",
+              "415.txt",
+              "440.txt",
+              "443.txt",
+              "444.txt",
+              "445.txt",
+              "446.txt",
+              "447.txt",
+              "450.txt",
+              "463.txt",
+              "472.txt",
+              "474.txt",
+              "476.txt"]
+    banned = []
     for _id in ids:
-        tp_g, c_g, tp_r = calc_TP_FP(_id)
-        p = tp_g / c_g
-        r = tp_g / tp_r
+        if _id not in banned:
+            tp_g, c_g, tp_r = calc_TP_FP(_id)
 
-        try:
+            try:
+                p = tp_g / c_g
+            except:
+                p = 0
+            try:
+                r = tp_g / tp_r
+            except:
+                r = 0
 
-            f = 2 * ((p * r) / (p + r))
-        except:
-            f = 0
-        if f is 0:
-            print(_id)
-        # print(tp,fp,fn)
-        fs.append((f, _id))
-        pr.append(((p * r), (p + r)))
-        ps.append(p)
-        rs.append(r)
+            try:
+
+                f = 2 * ((p * r) / (p + r))
+            except:
+                print(f)
+                f = 0
+            if f is 0:
+                print(_id)
+            # print(tp,fp,fn)
+            fs.append((f, _id))
+            pr.append(((p * r), (p + r)))
+            ps.append(p)
+            rs.append(r)
         # print(f"For {_id} Precision  = {p}, \n Recall = {r} \n F measure = {f}")
         # print(f, _id)
     print(ps)
@@ -184,7 +217,7 @@ if __name__ == '__main__':
         mode_p = s.mode(item for item in ps)
     except s.StatisticsError:
         # strip_ps = [pair[0] for pair in ps]
-        mode_r = sorted(ps, key=ps.count, reverse=True)[0]
+        mode_p = sorted(ps, key=ps.count, reverse=True)[0]
 
     maximum_p = max(
         item for item in ps)

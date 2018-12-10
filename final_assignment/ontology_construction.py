@@ -6,10 +6,18 @@ import final_assignment.seminar_data_extractor as extractor
 emails = extractor.get_untagged()
 ontology = o.Ontology()
 
+def generate_file_ids(s, e):
+    ret = []
+    for i in range(s, e):
+        ret.append(str(i) + ".txt")
+    return ret
 
 def tag(e):
     return e.tag_all()
-
+# fileids = generate_file_ids(301,484)
+#
+# for fileid in fileids:
+#     f = open(f"../data/generated/{str(fileid)}", "r")
 
 with mp.Pool() as pool:
     emails = pool.map(tag, emails)
@@ -29,13 +37,14 @@ import itertools
 def add_helper(args):
     return ontology.add_to(*args)
 
-with mp.Pool() as pool:
-    l = ext()
-    pool.map(add_helper, l)
-# for email in emails:
-#     # email.tag_all()
-#     ontology.add_to(email.get_header().topic, email.fileid)
+# with mp.Pool() as pool:
+#     l = ext()
+#     pool.map(add_helper, l)
+for email in emails:
+    # email.tag_all()
+    ontology.add_to(email.get_header().topic, email.fileid)
 
 
 print(ontology)
+print("Saving")
 ontology.save_pop()
